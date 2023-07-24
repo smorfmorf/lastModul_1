@@ -36,6 +36,15 @@ const game = (function () {
             playerBalls += totalGuess;
         }
 
+        // Проверяем, чтобы количество шариков не превышало 10
+        if (playerBalls > 10) {
+            playerBalls = 10;
+        }
+
+        if (botBalls > 10) {
+            botBalls = 10;
+        }
+
         console.log(`У игрока осталось шариков: ${playerBalls}`);
         console.log(`У бота осталось шариков: ${botBalls}`);
 

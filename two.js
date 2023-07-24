@@ -1,1 +1,1 @@
-game.start();
+game.startGame();
