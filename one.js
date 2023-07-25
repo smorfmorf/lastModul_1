@@ -1,68 +1,71 @@
+// game.js
 const game = (function () {
+    // Функция для генерации случайного числа от min до max (включительно)
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    // Замыкание для хранения количества шариков у игрока и бота
     let playerBalls = 5;
     let botBalls = 5;
 
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function getPlayerGuess() {
-        let maxGuess = Math.min(playerBalls, 5); // Ограничиваем ввод числа от 1 до количества имеющихся шариков (максимум 5)
-        let guess = +prompt(`Введите число от 1 до ${maxGuess}:`);
-        if (isNaN(guess) || guess < 1 || guess > maxGuess) {
-            alert("Некорректный ввод! Попробуйте еще раз.");
-            return getPlayerGuess(); // Рекурсивно запускаем функцию снова для корректного ввода
-        }
-        return guess;
-    }
-
-    function playRound() {
-        let playerGuess = getPlayerGuess();
-        let botGuess = getRandomInt(1, 5);
-        let totalGuess = playerGuess + botGuess;
-
-        console.log(`Игрок загадал: ${playerGuess}`);
-        console.log(`Бот угадал: ${botGuess}`);
-
-        if (totalGuess % 2 === 0) {
-            // Если сумма шариков четная, бот угадал
-            console.log("Бот угадал!");
-            botBalls += totalGuess;
-            playerBalls -= playerGuess;
-        } else {
-            // Если сумма шариков нечетная, бот не угадал
-            console.log("Бот не угадал!");
-            botBalls -= botGuess;
-            playerBalls += totalGuess;
-        }
-
-        // Проверяем, чтобы количество шариков не превышало 10
-        if (playerBalls > 10) {
-            playerBalls = 10;
-        }
-
-        if (botBalls > 10) {
-            botBalls = 10;
-        }
-
-        console.log(`У игрока осталось шариков: ${playerBalls}`);
-        console.log(`У бота осталось шариков: ${botBalls}`);
-
-        if (playerBalls <= 0 || botBalls <= 0) {
-            // Проверка на окончание игры
-            console.log(
-                playerBalls <= 0 ? "Игрок проиграл!" : "Игрок победил!"
+    // Функция, которая запускает игру
+    function playGame() {
+        while (playerBalls > 0 && botBalls > 0) {
+            // Шаг 1: Игрок загадывает число и вводит его в prompt
+            const playerGuess = prompt(
+                `У вас ${playerBalls} шариков. Введите число от 1 до ${playerBalls}:`
             );
-            return;
+
+            // Проверка на отмену игры
+            if (playerGuess === null) {
+                alert("Вы решили выйти из игры.");
+                return;
+            }
+
+            // Проверка на правильность ввода числа
+            const playerGuessNumber = parseInt(playerGuess);
+            if (
+                isNaN(playerGuessNumber) ||
+                playerGuessNumber < 1 ||
+                playerGuessNumber > playerBalls
+            ) {
+                alert("Пожалуйста, введите корректное число.");
+                continue;
+            }
+
+            // Шаг 2: Бот рандомно угадывает чётное или нечётное количество шариков
+            const botGuess = getRandomInt(1, botBalls);
+
+            // Шаг 3 и 4: Проверяем, угадал ли бот, и обновляем количество шариков
+            if (botGuess % 2 === playerGuessNumber % 2) {
+                alert(`Бот угадал! Берет ${playerGuessNumber} шариков.`);
+                botBalls += playerGuessNumber;
+                playerBalls -= playerGuessNumber;
+            } else {
+                alert(`Бот не угадал! Вы берете ${botGuess} шариков.`);
+                playerBalls += botGuess;
+                botBalls -= botGuess;
+            }
+
+            // Выводим текущее количество шариков у игрока и бота
+            alert(
+                `У вас: ${playerBalls} шариков, У бота: ${botBalls} шариков.`
+            );
+        }
+
+        // Шаг 5: Определяем победителя
+        if (playerBalls <= 0) {
+            alert("Вы проиграли! У вас закончились шарики.");
         } else {
-            playRound(); // Рекурсивно запускаем следующий раунд
+            alert("Поздравляем, вы победили! У бота закончились шарики.");
         }
     }
 
     return {
-        startGame: function () {
-            console.log("Игра начинается!");
-            playRound();
+        startGame() {
+            // Запускаем игру при загрузке страницы
+            playGame();
         },
     };
 })();
